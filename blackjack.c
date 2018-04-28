@@ -1,3 +1,8 @@
+/*
+Author: Barrett Stolzman
+Date: 4/27/18
+*/
+
 #include <stdlib.h>
 #include <time.h>
 //function prototypes
@@ -10,29 +15,31 @@ int random_generation(int);
 
 int main(void)
 {
-  volatile int * key_adr = (int *) 0x10000050;
-  volatile int * sw_adr = (int *) 0x10000040;	// SW slider switch address
-  char p1_text[40] = "Player one wins!\0";
+  volatile int * key_adr = (int *) 0x10000050;  // key address
+  volatile int * sw_adr = (int *) 0x10000040;	// switch address
+  //lcd messages
+  char p1_text[40] = "Player one wins!\0";  
   char p2_text[40] = "Dealer wins!\0";
   char start_1[40] = "Blackjack(kinda)";
   char start_2[40] = "Press Key 3";
   char push[40] = "Push!";
   char reset1[40] = "Press Key[1]";
   char reset2[40] = "to continue....";
-  
+	
+  //game loop
   while(1)
   {
-	int count = 0;
-	int p2_sum = 0;
-	int p1_sum = 0;
-	LCD_clear();
-	LCD_cursor(0,0);
-	LCD_text(start_1);
-	LCD_cursor(0,1);
-	LCD_text(start_2);
-	int key_val = *(key_adr);
+	int count = 0; //count variable used to seed random number generation
+	int p2_sum = 0; //dealer sum
+	int p1_sum = 0; //player sum
+	LCD_clear(); //clear display
+	LCD_cursor(0,0); //set lcd cursor to top left
+	LCD_text(start_1); //print message
+	LCD_cursor(0,1); //set lcd cursor to bottom left
+	LCD_text(start_2); //print message
+	int key_val = *(key_adr); //prime key value
 	
-	while(key_val != 0x8)
+	while(key_val != 0x8) //increment counter while waiting for user to start the game
 	{
 		count++;
 		key_val = *(key_adr);
@@ -40,23 +47,23 @@ int main(void)
 	
 	LCD_clear();	
 	
-	srand(count);
+	srand(count); //seed random number with count
 	
 	for(int i = 0; i < 2; i++) //initializes player 1 cards
 	{
-		p1_sum += (rand() % 10 + 2);		
+		p1_sum += (rand() % 10 + 2); //adds random number between 2 and 10	
 	}
 	
 	p2_sum += rand() % 10 + 2;
 	
-	display_hex(p1_sum,p2_sum);
+	display_hex(p1_sum,p2_sum); //display current scores
 	
 	
-	while(key_val != 0x4 && p1_sum < 21)
+	while(key_val != 0x4 && p1_sum < 21) //player card loop
 	{
-		if (key_val == 0x2)
+		if (key_val == 0x2) 
 		{
-			int x = 0;
+			int x = 0; //used for random number generation
 			
 			while(key_val == 0x2)
 			{
